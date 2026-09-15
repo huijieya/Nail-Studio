@@ -1,0 +1,6 @@
+{
+  "name": "美甲设计编辑器",
+  "description": "专业PS风格Web端美甲设计编辑器，支持STL模型转换、十指模型装配、分层工艺步骤及2D/3D视图实时编辑。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
