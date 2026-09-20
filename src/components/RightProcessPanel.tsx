@@ -10,7 +10,9 @@ import {
   FinishItem,
   PROCESS_ORDER,
   PROCESS_STEP_TITLES,
+  NailShape,
 } from "../types/nail";
+import { NAIL_SHAPES, getNailShapeInfo } from "../utils/nailShapes";
 import {
   Eye,
   EyeOff,
@@ -27,6 +29,8 @@ import {
   Sparkles,
   Droplet,
   Paintbrush,
+  Check,
+  Shield,
 } from "lucide-react";
 
 interface RightProcessPanelProps {
@@ -42,6 +46,8 @@ interface RightProcessPanelProps {
   onAddStep: (type: ProcessStepType) => void;
   onUpdateStepProperty: (stepId: string, updates: Partial<ProcessStep>) => void;
   onUpdateItemProperty: (itemId: string, updates: Partial<DesignItem>) => void;
+  targetShape: NailShape;
+  onChangeTargetShape?: (shape: NailShape) => void;
 }
 
 export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
@@ -57,8 +63,12 @@ export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
   onAddStep,
   onUpdateStepProperty,
   onUpdateItemProperty,
+  targetShape,
+  onChangeTargetShape,
 }) => {
   const [activeTab, setActiveTab] = useState<"steps" | "properties">("steps");
+  const [expandedNailShape, setExpandedNailShape] = useState<boolean>(true);
+  const currentShapeInfo = getNailShapeInfo(targetShape);
 
   // Find active step and determine its category
   const activeStep = steps.find((s) => s.id === activeStepId) || steps[0];
@@ -177,6 +187,128 @@ export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
         {activeTab === "steps" ? (
           /* ================= PROCESS STEPS DOCK ================= */
           <div className="space-y-1.5">
+            {/* ================= 0. BASE NAIL SHAPE STEP (甲型规格选择) ================= */}
+            <div
+              className={`bg-[#2B2B2B] border rounded-xs overflow-hidden transition-colors ${
+                activeStepId === "nail-shape"
+                  ? "border-[#5E7EB8] ring-1 ring-[#5E7EB8]/30"
+                  : "border-[#4A4A4A]"
+              }`}
+            >
+              {/* Category Header Row */}
+              <div
+                onClick={() => {
+                  onSelectStep("nail-shape");
+                  setExpandedNailShape((prev) => !prev);
+                }}
+                className={`h-7 px-2 flex items-center justify-between cursor-pointer transition-colors ${
+                  activeStepId === "nail-shape"
+                    ? "bg-[#333D4B] text-[#E5E5E5]"
+                    : "bg-[#333333] hover:bg-[#3A3A3A] text-[#E5E5E5]"
+                }`}
+              >
+                <div className="flex items-center space-x-1.5">
+                  {expandedNailShape ? (
+                    <ChevronDown className="w-3 h-3 text-[#A8A8A8]" />
+                  ) : (
+                    <ChevronRight className="w-3 h-3 text-[#A8A8A8]" />
+                  )}
+                  <span className="font-medium text-[#E5E5E5] text-[11px]">
+                    0. 甲型选择
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#202020] border border-[#4A4A4A] text-[#E5E5E5] font-mono">
+                    {currentShapeInfo.name}
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  {/* Mini Silhouette of Active Shape */}
+                  <div
+                    className="w-3.5 h-4.5 bg-[#202020] rounded-xs border border-[#4A4A4A] flex items-center justify-center p-0.5"
+                    title={`当前甲型: ${currentShapeInfo.name} (${currentShapeInfo.enName})`}
+                  >
+                    <svg viewBox="0 0 100 380" className="w-full h-full text-[#5E7EB8]">
+                      <path d={currentShapeInfo.iconD} fill="currentColor" />
+                    </svg>
+                  </div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" title="甲型基底已就绪" />
+                </div>
+              </div>
+
+              {/* Expanded: Nail Shapes 4-Choice Selection Grid */}
+              {expandedNailShape && (
+                <div className="p-2 bg-[#252525] border-t border-[#3D3D3D] space-y-2">
+                  <div className="flex items-center justify-between text-[10px] text-[#A8A8A8] pb-1 border-b border-[#373737]">
+                    <span>常用标准甲型 (点击即时切换)</span>
+                    <span className="text-[#5E7EB8] font-mono">十指联动</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {NAIL_SHAPES.map((shape) => {
+                      const isSelected =
+                        targetShape === shape.id ||
+                        (targetShape === "squoval" && shape.id === "coffin");
+                      return (
+                        <button
+                          key={shape.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectStep("nail-shape");
+                            onChangeTargetShape?.(shape.id);
+                          }}
+                          className={`p-1.5 rounded text-left flex items-center space-x-2 border transition-all ${
+                            isSelected
+                              ? "bg-[#333D4D] border-[#5E7EB8] text-[#FFFFFF] shadow-xs"
+                              : "bg-[#2D2D2D] border-[#404040] hover:border-[#555555] text-[#CCCCCC]"
+                          }`}
+                        >
+                          {/* Silhouette SVG Preview */}
+                          <div
+                            className={`w-4 h-7 rounded-xs flex items-center justify-center p-0.5 border shrink-0 ${
+                              isSelected
+                                ? "bg-[#1E2633] border-[#5E7EB8]"
+                                : "bg-[#202020] border-[#3E3E3E]"
+                            }`}
+                          >
+                            <svg
+                              viewBox="0 0 100 380"
+                              className={`w-full h-full ${
+                                isSelected ? "text-[#E5E5E5]" : "text-[#888888]"
+                              }`}
+                            >
+                              <path d={shape.iconD} fill="currentColor" />
+                            </svg>
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-medium truncate">
+                                {shape.name}
+                              </span>
+                              {isSelected && (
+                                <Check className="w-3 h-3 text-[#5E7EB8] shrink-0 ml-0.5" />
+                              )}
+                            </div>
+                            <div className="text-[9px] text-[#888888] font-mono flex items-center justify-between mt-0.5">
+                              <span>{shape.enName}</span>
+                              <span className="px-1 rounded bg-[#202020] text-[#A8A8A8] text-[8px]">
+                                {shape.tag}
+                              </span>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="text-[9px] text-[#777777] leading-relaxed pt-0.5 flex items-center justify-between">
+                    <span>* 切换甲型自动重构十指基底网格与安全裁切轮廓</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {categories.map((catType) => {
               const catSteps = steps.filter((s) => s.type === catType);
               const isExpanded = !!expandedCategories[catType];
@@ -367,6 +499,107 @@ export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
         ) : (
           /* ================= PROPERTIES INSPECTOR DOCK ================= */
           <div className="space-y-3">
+            {activeStepId === "nail-shape" ? (
+              <div className="space-y-3">
+                <div className="pb-1.5 border-b border-[#4A4A4A]">
+                  <div className="text-[10px] text-[#888888] uppercase font-mono">甲型规格属性</div>
+                  <div className="text-xs font-semibold text-[#E5E5E5] mt-0.5">
+                    {currentShapeInfo.name} ({currentShapeInfo.enName})
+                  </div>
+                </div>
+
+                {/* Shape Overview Card */}
+                <div className="bg-[#373737] p-2.5 rounded border border-[#4A4A4A] space-y-2">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-16 bg-[#252525] rounded border border-[#4A4A4A] flex items-center justify-center p-1 shrink-0">
+                      <svg viewBox="0 0 100 380" className="w-full h-full text-[#5E7EB8]">
+                        <path d={currentShapeInfo.iconD} fill="currentColor" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[12px] font-bold text-[#E5E5E5] flex items-center space-x-1.5">
+                        <span>{currentShapeInfo.name}</span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#202020] text-[#5E7EB8] border border-[#5E7EB8]/40">
+                          {currentShapeInfo.tag}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-[#A8A8A8] mt-1 leading-relaxed">
+                        {currentShapeInfo.description}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Shape Switcher */}
+                <div className="bg-[#373737] p-2.5 rounded border border-[#4A4A4A] space-y-2">
+                  <div className="text-[11px] font-medium text-[#E5E5E5]">切换目标甲型</div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {NAIL_SHAPES.map((shape) => {
+                      const isSelected =
+                        targetShape === shape.id ||
+                        (targetShape === "squoval" && shape.id === "coffin");
+                      return (
+                        <button
+                          key={shape.id}
+                          type="button"
+                          onClick={() => onChangeTargetShape?.(shape.id)}
+                          className={`p-1.5 rounded text-left border text-[11px] flex items-center space-x-1.5 transition-colors ${
+                            isSelected
+                              ? "bg-[#333D4D] border-[#5E7EB8] text-[#FFFFFF]"
+                              : "bg-[#252525] border-[#404040] hover:border-[#555555] text-[#CCCCCC]"
+                          }`}
+                        >
+                          <div className="w-3.5 h-6 bg-[#202020] rounded-xs border border-[#3E3E3E] flex items-center justify-center p-0.5 shrink-0">
+                            <svg
+                              viewBox="0 0 100 380"
+                              className={`w-full h-full ${
+                                isSelected ? "text-[#5E7EB8]" : "text-[#888]"
+                              }`}
+                            >
+                              <path d={shape.iconD} fill="currentColor" />
+                            </svg>
+                          </div>
+                          <div className="truncate">
+                            <div className="font-medium truncate">
+                              {shape.name.split("/")[0].trim()}
+                            </div>
+                            <div className="text-[9px] text-[#888888] font-mono truncate">
+                              {shape.enName}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Geometry & Production Specs */}
+                <div className="bg-[#373737] p-2.5 rounded border border-[#4A4A4A] space-y-2">
+                  <div className="text-[11px] font-medium text-[#E5E5E5]">工业生产参数</div>
+                  <div className="space-y-1.5 text-[11px]">
+                    <div className="flex justify-between py-1 px-1.5 bg-[#252525] rounded border border-[#404040]">
+                      <span className="text-[#A8A8A8]">长宽基准比:</span>
+                      <span className="text-[#E5E5E5] font-mono">
+                        1 : {(1.8 * currentShapeInfo.defaultLengthMultiplier).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 px-1.5 bg-[#252525] rounded border border-[#404040]">
+                      <span className="text-[#A8A8A8]">安全生产边距 (Safe Inset):</span>
+                      <span className="text-[#5E7EB8] font-mono">0.8 mm (8% 边界)</span>
+                    </div>
+                    <div className="flex justify-between py-1 px-1.5 bg-[#252525] rounded border border-[#404040]">
+                      <span className="text-[#A8A8A8]">UV 正交拓扑算法:</span>
+                      <span className="text-[#A8A8A8] font-mono">uv-ortho-profile-v1</span>
+                    </div>
+                    <div className="flex justify-between py-1 px-1.5 bg-[#252525] rounded border border-[#404040]">
+                      <span className="text-[#A8A8A8]">部件作用域:</span>
+                      <span className="text-emerald-400 font-medium">十指独立部件 (已联动)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
             {/* Context Header */}
             <div className="pb-1.5 border-b border-[#4A4A4A]">
               <div className="text-[10px] text-[#888888] uppercase font-mono">属性参数</div>
@@ -660,6 +893,8 @@ export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
                   </div>
                 )}
               </div>
+            )}
+            </>
             )}
           </div>
         )}

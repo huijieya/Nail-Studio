@@ -8,6 +8,7 @@ import {
   BackgroundItem,
   FinishItem,
 } from "../types/nail";
+import { getNailWidthFactor } from "../utils/nailShapes";
 import {
   Rotate3d,
   Compass,
@@ -153,29 +154,12 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     const normals: number[] = [];
     const indices: number[] = [];
 
-    const isSquoval = targetShape === "squoval";
-
     for (let j = 0; j <= vSegments; j++) {
       const v = j / vSegments; // 0 (tip) to 1 (cuticle)
       const y = (0.5 - v) * 2.4; // 1.2 to -1.2
 
       // Silhouette width at this v
-      let widthFactor = 1.0;
-      if (isSquoval) {
-        // Squoval maintains width until gentle curve near tip
-        if (v < 0.15) {
-          widthFactor = 0.92 + (v / 0.15) * 0.08;
-        } else if (v > 0.85) {
-          widthFactor = 0.88 + ((1 - v) / 0.15) * 0.12;
-        }
-      } else {
-        // Oval tapers towards the tip
-        if (v < 0.5) {
-          widthFactor = 0.65 + (v / 0.5) * 0.35;
-        } else {
-          widthFactor = 0.95 - ((v - 0.5) / 0.5) * 0.15;
-        }
-      }
+      const widthFactor = getNailWidthFactor(targetShape, v);
 
       for (let i = 0; i <= uSegments; i++) {
         const u = i / uSegments; // 0 to 1
@@ -280,8 +264,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
         // Calculate surface position in 3D
         const y = (0.5 - v) * 2.4;
-        const isSquoval = targetShape === "squoval";
-        const widthFactor = isSquoval ? 1.0 : (v < 0.5 ? 0.65 + (v / 0.5) * 0.35 : 0.95);
+        const widthFactor = getNailWidthFactor(targetShape, v);
         const x = (u - 0.5) * 1.5 * widthFactor;
 
         // C-curve height + longitudinal curve + height offset

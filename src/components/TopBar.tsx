@@ -3,6 +3,7 @@ import {
   NailShape,
   SelectionRangeMode,
 } from "../types/nail";
+import { getNailShapeInfo } from "../utils/nailShapes";
 import {
   Layers,
   Lock,
@@ -84,7 +85,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </span>
           <span className="text-[#4A4A4A]">/</span>
           <span className="text-[#E5E5E5] font-medium">
-            {targetShape === "squoval" ? "方圆型 (Squoval)" : "椭圆型 (Oval)"}
+            {getNailShapeInfo(targetShape).name} ({getNailShapeInfo(targetShape).enName})
           </span>
           <span className="text-[10px] text-[#5E7EB8] font-mono">已锁定</span>
         </div>

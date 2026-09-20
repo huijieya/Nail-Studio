@@ -176,7 +176,21 @@ export default function App() {
   // Active step object
   const currentStep =
     currentNail?.steps.find((s) => s.id === activeStepId) || currentNail?.steps[0];
-  const currentStepType: ProcessStepType = currentStep?.type || "background";
+  const currentStepType: ProcessStepType | "nail-shape" =
+    activeStepId === "nail-shape" ? "nail-shape" : (currentStep?.type || "background");
+
+  // Nail shape change handler
+  const handleChangeNailShape = (newShape: NailShape) => {
+    const newEditable = generateEditableModel(sourceModel, newShape);
+    setEditableModel(newEditable);
+    updateDocumentWithHistory((prev) => ({
+      ...prev,
+      model: {
+        ...prev.model,
+        editableModelId: newEditable.id,
+      },
+    }));
+  };
 
   // 1. Tool action: Add Flat Item (Sticker / Shape / Image)
   const handleAddFlatItem = (itemPartial: Partial<FlatDesignItem>) => {
@@ -848,6 +862,8 @@ export default function App() {
           onAddStep={handleAddStep}
           onUpdateStepProperty={handleUpdateStepProperty}
           onUpdateItemProperty={handleUpdateItemProperty}
+          targetShape={editableModel.targetShape}
+          onChangeTargetShape={handleChangeNailShape}
         />
 
         {/* Center: 2D Canvas / 3D View / Ten Nails Overview */}
@@ -905,6 +921,8 @@ export default function App() {
           onSelectTool={setActiveTool}
           showSafeArea={showSafeArea}
           onToggleSafeArea={() => setShowSafeArea((v) => !v)}
+          targetShape={editableModel.targetShape}
+          onChangeTargetShape={handleChangeNailShape}
         />
       </div>
 

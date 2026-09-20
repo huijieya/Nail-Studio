@@ -10,6 +10,7 @@ import {
   FinishItem,
   Transform2D,
 } from "../types/nail";
+import { getNailShapeInfo } from "../utils/nailShapes";
 import {
   RotateCcw,
   RotateCw,
@@ -69,46 +70,13 @@ export const Canvas2D: React.FC<Canvas2DProps> = ({
   // UV 0,0 is top-left, 1,1 is bottom-right.
   // Nail root is at bottom (y=1), tip is at top (y=0) or vice versa.
   // Standard nail top: y=0, nail base/cuticle: y=1.
-  const getSilhouettePath = () => {
-    if (targetShape === "squoval") {
-      // Squoval: gentle curved flat tip, vertical sides, rounded cuticle
-      return `M 40 440 
-              C 40 460, 300 460, 300 440 
-              L 300 90 
-              C 300 50, 270 30, 210 26 
-              L 130 26 
-              C 70 30, 40 50, 40 90 
-              Z`;
-    } else {
-      // Oval: streamlined tapered sides, smooth oval tip
-      return `M 50 440 
-              C 50 465, 290 465, 290 440 
-              C 290 320, 295 180, 260 90 
-              C 230 25, 110 25, 80 90 
-              C 45 180, 50 320, 50 440 
-              Z`;
-    }
-  };
+  const shapeInfo = getNailShapeInfo(targetShape);
+
+  // Derive visual silhouette path for nail shape
+  const getSilhouettePath = () => shapeInfo.canvasPath;
 
   // Safe area path (insets approx 8%)
-  const getSafeAreaPath = () => {
-    if (targetShape === "squoval") {
-      return `M 60 420 
-              C 60 440, 280 440, 280 420 
-              L 280 100 
-              C 280 68, 255 48, 205 44 
-              L 135 44 
-              C 85 48, 60 68, 60 100 
-              Z`;
-    } else {
-      return `M 70 420 
-              C 70 440, 270 440, 270 420 
-              C 270 310, 275 180, 245 100 
-              C 220 45, 120 45, 95 100 
-              C 65 180, 70 310, 70 420 
-              Z`;
-    }
-  };
+  const getSafeAreaPath = () => shapeInfo.safeAreaPath;
 
   // Find currently selected item across all steps
   let selectedItem: any = null;
@@ -270,7 +238,7 @@ export const Canvas2D: React.FC<Canvas2DProps> = ({
           </span>
           <span className="text-[#4A4A4A]">|</span>
           <span className="text-[#A8A8A8]">
-            甲型: {targetShape === "squoval" ? "方圆型" : "椭圆型"}
+            甲型: {shapeInfo.name} ({shapeInfo.enName})
           </span>
         </div>
 

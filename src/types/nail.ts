@@ -1,4 +1,4 @@
-export type NailShape = "squoval" | "oval";
+export type NailShape = "coffin" | "oval" | "almond" | "stiletto" | "squoval";
 
 export type NailSlot =
   | "left-thumb"

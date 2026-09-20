@@ -9,6 +9,7 @@ import {
   BUILTIN_SOURCE_MODELS,
   NAIL_SLOTS,
 } from "../utils/nailDefaults";
+import { NAIL_SHAPES } from "../utils/nailShapes";
 import {
   NailModelConverterService,
   parseSTLHeader,
@@ -213,82 +214,54 @@ export const ModelPrepView: React.FC<ModelPrepViewProps> = ({ onConfirmAndLock }
               <h2 className="text-sm font-semibold tracking-wide text-[#E5E5E5]">2. 选择目标甲型 (NailShape)</h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {/* Squoval */}
-              <div
-                onClick={() => {
-                  setSelectedShape("squoval");
-                  setConvertedModel(null);
-                  setValidationReport(null);
-                }}
-                className={`p-3.5 rounded border cursor-pointer flex flex-col items-center justify-center transition-all ${
-                  selectedShape === "squoval"
-                    ? "bg-[#373737] border-[#5E7EB8] text-[#E5E5E5] shadow-xs"
-                    : "bg-[#202020] border-[#4A4A4A] text-[#A8A8A8] hover:border-[#666666]"
-                }`}
-              >
-                {/* Visual Silhouette SVG for Squoval */}
-                <div className="w-16 h-24 mb-2 flex items-center justify-center bg-[#252525] rounded border border-[#4A4A4A]">
-                  <svg width="44" height="68" viewBox="0 0 44 68" fill="none">
-                    <path
-                      d="M6 64 C6 64 6 22 7 14 C8 8 13 4 22 4 C31 4 36 8 37 14 C38 22 38 64 38 64 Z"
-                      fill={selectedShape === "squoval" ? "#E5E5E5" : "#373737"}
-                      fillOpacity={selectedShape === "squoval" ? "0.95" : "0.55"}
-                      stroke="#888888"
-                      strokeWidth="1.5"
-                    />
-                    {/* Flat top curve */}
-                    <line x1="14" y1="4" x2="30" y2="4" stroke="#FFFFFF" strokeWidth="2" strokeOpacity="0.9" />
-                  </svg>
-                </div>
-                <span className="text-xs font-semibold text-[#E5E5E5]">方圆型 (Squoval)</span>
-                <span className="text-[10px] text-[#A8A8A8] mt-1 text-center">
-                  甲面两侧垂直平直，顶端微弧微平，适合法式与现代几何
-                </span>
-                {selectedShape === "squoval" && (
-                  <div className="mt-2 flex items-center text-[10px] text-[#5E7EB8]">
-                    <Check className="w-3 h-3 mr-1" /> 已选定
+            <div className="grid grid-cols-2 gap-2.5">
+              {NAIL_SHAPES.map((shape) => {
+                const isSelected =
+                  selectedShape === shape.id ||
+                  (selectedShape === "squoval" && shape.id === "coffin");
+                return (
+                  <div
+                    key={shape.id}
+                    onClick={() => {
+                      setSelectedShape(shape.id);
+                      setConvertedModel(null);
+                      setValidationReport(null);
+                    }}
+                    className={`p-3 rounded border cursor-pointer flex flex-col items-center justify-center transition-all ${
+                      isSelected
+                        ? "bg-[#333D4D] border-[#5E7EB8] text-[#E5E5E5] shadow-xs"
+                        : "bg-[#202020] border-[#4A4A4A] text-[#A8A8A8] hover:border-[#666666]"
+                    }`}
+                  >
+                    {/* Visual Silhouette SVG */}
+                    <div className="w-14 h-22 mb-2 flex items-center justify-center bg-[#252525] rounded border border-[#4A4A4A] p-1">
+                      <svg viewBox="0 0 100 380" className="w-full h-full">
+                        <path
+                          d={shape.iconD}
+                          fill={isSelected ? "#E5E5E5" : "#555555"}
+                          fillOpacity={isSelected ? "0.95" : "0.55"}
+                          stroke="#888888"
+                          strokeWidth="3"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-semibold text-[#E5E5E5]">
+                      {shape.name}
+                    </span>
+                    <span className="text-[9px] text-[#5E7EB8] font-mono mt-0.5">
+                      {shape.enName} · {shape.tag}
+                    </span>
+                    <span className="text-[10px] text-[#888888] mt-1 text-center line-clamp-2">
+                      {shape.description}
+                    </span>
+                    {isSelected && (
+                      <div className="mt-1.5 flex items-center text-[10px] text-[#5E7EB8]">
+                        <Check className="w-3 h-3 mr-1" /> 已选定
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-
-              {/* Oval */}
-              <div
-                onClick={() => {
-                  setSelectedShape("oval");
-                  setConvertedModel(null);
-                  setValidationReport(null);
-                }}
-                className={`p-3.5 rounded border cursor-pointer flex flex-col items-center justify-center transition-all ${
-                  selectedShape === "oval"
-                    ? "bg-[#373737] border-[#5E7EB8] text-[#E5E5E5] shadow-xs"
-                    : "bg-[#202020] border-[#4A4A4A] text-[#A8A8A8] hover:border-[#666666]"
-                }`}
-              >
-                {/* Visual Silhouette SVG for Oval */}
-                <div className="w-16 h-24 mb-2 flex items-center justify-center bg-[#252525] rounded border border-[#4A4A4A]">
-                  <svg width="44" height="68" viewBox="0 0 44 68" fill="none">
-                    <path
-                      d="M8 64 C7 48 8 26 12 14 C15 5 20 2 22 2 C24 2 29 5 32 14 C36 26 37 48 36 64 Z"
-                      fill={selectedShape === "oval" ? "#E5E5E5" : "#373737"}
-                      fillOpacity={selectedShape === "oval" ? "0.95" : "0.55"}
-                      stroke="#888888"
-                      strokeWidth="1.5"
-                    />
-                    {/* Elliptical top curve */}
-                    <path d="M16 5 C19 2.5 25 2.5 28 5" stroke="#FFFFFF" strokeWidth="2" strokeOpacity="0.9" />
-                  </svg>
-                </div>
-                <span className="text-xs font-semibold text-[#E5E5E5]">椭圆型 (Oval)</span>
-                <span className="text-[10px] text-[#A8A8A8] mt-1 text-center">
-                  边缘向指尖聚拢呈流畅卵圆形，线条修长，适合晕染与浮雕饰品
-                </span>
-                {selectedShape === "oval" && (
-                  <div className="mt-2 flex items-center text-[10px] text-[#5E7EB8]">
-                    <Check className="w-3 h-3 mr-1" /> 已选定
-                  </div>
-                )}
-              </div>
+                );
+              })}
             </div>
 
             {/* Start Conversion Action */}

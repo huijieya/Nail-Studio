@@ -66,8 +66,12 @@ export function generateEditableModel(
   targetShape: NailShape
 ): EditableModelAsset {
   const parts: NailModelPart[] = NAIL_SLOTS.map((slotMeta) => {
-    // Squoval is slightly wider at the tip, oval is tapered
-    const lengthMultiplier = targetShape === "oval" ? 1.05 : 1.0;
+    let lengthMultiplier = 1.0;
+    if (targetShape === "coffin") lengthMultiplier = 1.06;
+    else if (targetShape === "oval") lengthMultiplier = 1.05;
+    else if (targetShape === "almond") lengthMultiplier = 1.08;
+    else if (targetShape === "stiletto") lengthMultiplier = 1.15;
+
     return {
       id: `part-${targetShape}-${slotMeta.slot}`,
       sourcePartId: `stl-mesh-${slotMeta.slot}`,

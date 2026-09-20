@@ -9,6 +9,7 @@ import {
   Decoration3DItem,
 } from "../types/nail";
 import { NAIL_SLOTS } from "../utils/nailDefaults";
+import { getNailShapeInfo } from "../utils/nailShapes";
 import {
   FlipHorizontal,
   Copy,
@@ -84,11 +85,7 @@ export const TenNailsOverview: React.FC<TenNailsOverviewProps> = ({
           >
             <defs>
               <clipPath id={`mini-clip-${slotMeta.slot}`}>
-                {targetShape === "squoval" ? (
-                  <path d="M 6 74 C 6 76, 44 76, 44 74 L 44 18 C 44 10, 38 6, 25 6 C 12 6, 6 10, 6 18 Z" />
-                ) : (
-                  <path d="M 8 74 C 8 76, 42 76, 42 74 C 42 50, 44 26, 38 12 C 34 4, 16 4, 12 12 C 6 26, 8 50, 8 74 Z" />
-                )}
+                <path d={getNailShapeInfo(targetShape).miniPath} />
               </clipPath>
             </defs>
 
@@ -131,21 +128,12 @@ export const TenNailsOverview: React.FC<TenNailsOverviewProps> = ({
             </g>
 
             {/* Silhouette Outline */}
-            {targetShape === "squoval" ? (
-              <path
-                d="M 6 74 C 6 76, 44 76, 44 74 L 44 18 C 44 10, 38 6, 25 6 C 12 6, 6 10, 6 18 Z"
-                fill="none"
-                stroke="#666"
-                strokeWidth="1.2"
-              />
-            ) : (
-              <path
-                d="M 8 74 C 8 76, 42 76, 42 74 C 42 50, 44 26, 38 12 C 34 4, 16 4, 12 12 C 6 26, 8 50, 8 74 Z"
-                fill="none"
-                stroke="#666"
-                strokeWidth="1.2"
-              />
-            )}
+            <path
+              d={getNailShapeInfo(targetShape).miniPath}
+              fill="none"
+              stroke="#666"
+              strokeWidth="1.2"
+            />
           </svg>
         </div>
 
