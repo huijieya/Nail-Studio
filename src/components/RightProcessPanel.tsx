@@ -137,7 +137,7 @@ export const RightProcessPanel: React.FC<RightProcessPanelProps> = ({
   };
 
   return (
-    <aside className="w-80 bg-[#303030] border-l border-[#4A4A4A] flex flex-col select-none text-xs h-[calc(100vh-44px)]">
+    <aside className="w-80 bg-[#303030] border-r border-[#4A4A4A] flex flex-col select-none text-xs h-[calc(100vh-44px)]">
       {/* Top Dock Tab Bar */}
       <div className="h-8 bg-[#303030] border-b border-[#4A4A4A] px-2 flex items-center justify-between">
         <div className="flex items-center space-x-1">

@@ -832,20 +832,22 @@ export default function App() {
         onOpenBatchModal={() => setIsBatchModalOpen(true)}
       />
 
-      {/* Main Workspace (3 Columns: Left Tools, Center Canvas, Right Panels) */}
+      {/* Main Workspace (3 Columns: Left: Process Steps, Center: Canvas, Right: Step Options & Properties) */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Tools Palette */}
-        <LeftToolbar
-          currentStepType={currentStepType}
-          onAddFlatItem={handleAddFlatItem}
-          onAdd3DItem={handleAdd3DItem}
-          onAddSurfaceItem={handleAddSurfaceItem}
-          onUpdateBackground={handleUpdateBackground}
-          onUpdateFinish={handleUpdateFinish}
-          activeTool={activeTool}
-          onSelectTool={setActiveTool}
-          showSafeArea={showSafeArea}
-          onToggleSafeArea={() => setShowSafeArea((v) => !v)}
+        {/* Left: Fixed Industrial Process Steps Panel */}
+        <RightProcessPanel
+          steps={currentNail.steps}
+          activeStepId={activeStepId}
+          onSelectStep={setActiveStepId}
+          selectedItemId={selectedItemId}
+          onSelectItem={setSelectedItemId}
+          onToggleStepVisibility={handleToggleStepVisibility}
+          onToggleStepSkip={handleToggleStepSkip}
+          onDuplicateStep={handleDuplicateStep}
+          onDeleteStep={handleDeleteStep}
+          onAddStep={handleAddStep}
+          onUpdateStepProperty={handleUpdateStepProperty}
+          onUpdateItemProperty={handleUpdateItemProperty}
         />
 
         {/* Center: 2D Canvas / 3D View / Ten Nails Overview */}
@@ -891,20 +893,18 @@ export default function App() {
           )}
         </main>
 
-        {/* Right: Fixed Industrial Process Steps & Properties Panel */}
-        <RightProcessPanel
-          steps={currentNail.steps}
-          activeStepId={activeStepId}
-          onSelectStep={setActiveStepId}
-          selectedItemId={selectedItemId}
-          onSelectItem={setSelectedItemId}
-          onToggleStepVisibility={handleToggleStepVisibility}
-          onToggleStepSkip={handleToggleStepSkip}
-          onDuplicateStep={handleDuplicateStep}
-          onDeleteStep={handleDeleteStep}
-          onAddStep={handleAddStep}
-          onUpdateStepProperty={handleUpdateStepProperty}
-          onUpdateItemProperty={handleUpdateItemProperty}
+        {/* Right: Step Options & Properties / Tools Palette */}
+        <LeftToolbar
+          currentStepType={currentStepType}
+          onAddFlatItem={handleAddFlatItem}
+          onAdd3DItem={handleAdd3DItem}
+          onAddSurfaceItem={handleAddSurfaceItem}
+          onUpdateBackground={handleUpdateBackground}
+          onUpdateFinish={handleUpdateFinish}
+          activeTool={activeTool}
+          onSelectTool={setActiveTool}
+          showSafeArea={showSafeArea}
+          onToggleSafeArea={() => setShowSafeArea((v) => !v)}
         />
       </div>
 
